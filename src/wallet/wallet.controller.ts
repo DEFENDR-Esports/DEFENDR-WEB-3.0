@@ -10,6 +10,5 @@ export class WalletController {
     @Get(":accountId/balance")
     getBalance(@Param("accountId") accountId: string): Promise<{ hbars: string; }> {
       return this.walletService.getBalance(accountId);
-    }
-    
+    } 
 }
