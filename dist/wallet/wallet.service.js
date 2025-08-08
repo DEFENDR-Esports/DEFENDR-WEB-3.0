@@ -21,7 +21,6 @@ let WalletService = class WalletService {
         const operatorId = process.env.OPERATOR_ID;
         const operatorKey = process.env.OPERATOR_KEY;
         const network = process.env.HEDERA_NETWORK || "testnet";
-        console.log("Creating Hedera wallet...", operatorId, operatorKey, network);
         const client = sdk_1.Client.forName(network);
         client.setOperator(operatorId, operatorKey);
         const mnemonic = await sdk_1.Mnemonic.generate();

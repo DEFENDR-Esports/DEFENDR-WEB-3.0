@@ -27,7 +27,7 @@ export class WalletService {
     const operatorKey = process.env.OPERATOR_KEY;
     const network = process.env.HEDERA_NETWORK || "testnet";
 
-    console.log("Creating Hedera wallet...", operatorId, operatorKey, network);
+ 
 
     // Init client
     const client = Client.forName(network);

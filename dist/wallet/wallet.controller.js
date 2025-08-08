@@ -13,26 +13,34 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WalletController = void 0;
+const redis_subscriber_service_1 = require("./../redis/redis-subscriber.service");
 const common_1 = require("@nestjs/common");
 const wallet_service_1 = require("./wallet.service");
+const event_emitter_1 = require("@nestjs/event-emitter");
+const utils_1 = require("../utils");
 let WalletController = class WalletController {
-    constructor(walletService) {
+    constructor(walletService, RedisService) {
         this.walletService = walletService;
-    }
-    generateWallet() {
-        return this.walletService.generateWallet();
+        this.RedisService = RedisService;
     }
     getBalance(accountId) {
         return this.walletService.getBalance(accountId);
     }
+    async handleUserCreated(payload) {
+        const walletCreated = await this.walletService.generateWallet();
+        const encryptedMnemonic = (0, utils_1.encryptData)(walletCreated.mnemonic, payload.encryptionKey);
+        const encryptedPrivateKey = (0, utils_1.encryptData)(walletCreated.privateKey, payload.encryptionKey);
+        const redisKey = `wallet:${payload.userId}`;
+        const redisValue = JSON.stringify({
+            accountId: walletCreated.accountId,
+            publicKey: walletCreated.publicKey,
+            encryptedMnemonic,
+            encryptedPrivateKey,
+        });
+        await this.RedisService.setKey(redisKey, redisValue, 60 * 60);
+    }
 };
 exports.WalletController = WalletController;
-__decorate([
-    (0, common_1.Post)("generate"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], WalletController.prototype, "generateWallet", null);
 __decorate([
     (0, common_1.Get)(":accountId/balance"),
     __param(0, (0, common_1.Param)("accountId")),
@@ -40,8 +48,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], WalletController.prototype, "getBalance", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)("redis.user_created"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "handleUserCreated", null);
 exports.WalletController = WalletController = __decorate([
-    (0, common_1.Controller)('wallet'),
-    __metadata("design:paramtypes", [wallet_service_1.WalletService])
+    (0, common_1.Controller)("wallet"),
+    __metadata("design:paramtypes", [wallet_service_1.WalletService, redis_subscriber_service_1.RedisService])
 ], WalletController);
 //# sourceMappingURL=wallet.controller.js.map

@@ -6,18 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.WalletModule = void 0;
+exports.RedisModule = void 0;
 const common_1 = require("@nestjs/common");
-const wallet_service_1 = require("./wallet.service");
-const wallet_controller_1 = require("./wallet.controller");
-const redis_subscriber_service_1 = require("../redis/redis-subscriber.service");
-let WalletModule = class WalletModule {
+const redis_subscriber_service_1 = require("./redis-subscriber.service");
+let RedisModule = class RedisModule {
 };
-exports.WalletModule = WalletModule;
-exports.WalletModule = WalletModule = __decorate([
+exports.RedisModule = RedisModule;
+exports.RedisModule = RedisModule = __decorate([
     (0, common_1.Module)({
-        providers: [wallet_service_1.WalletService, redis_subscriber_service_1.RedisService],
-        controllers: [wallet_controller_1.WalletController]
+        providers: [redis_subscriber_service_1.RedisService],
+        exports: [redis_subscriber_service_1.RedisService],
     })
-], WalletModule);
-//# sourceMappingURL=wallet.module.js.map
+], RedisModule);
+//# sourceMappingURL=redis.module.js.map
