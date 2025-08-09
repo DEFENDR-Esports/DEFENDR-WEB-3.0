@@ -21,6 +21,7 @@ let RedisService = RedisService_1 = class RedisService {
         this.channelsToListen = ['user_created', 'order_placed'];
     }
     onModuleInit() {
+        return;
         this.subscriber = new ioredis_1.default({
             host: '192.168.1.7',
             port: 6379,
