@@ -28,6 +28,7 @@ let WalletController = class WalletController {
     }
     async handleUserCreated(payload) {
         const walletCreated = await this.walletService.generateWallet();
+        console.log("user created event!");
         const encryptedMnemonic = (0, utils_1.encryptData)(walletCreated.mnemonic, payload.encryptionKey);
         const encryptedPrivateKey = (0, utils_1.encryptData)(walletCreated.privateKey, payload.encryptionKey);
         const redisKey = `wallet:${payload.userId}`;
@@ -38,6 +39,7 @@ let WalletController = class WalletController {
             encryptedPrivateKey,
         });
         await this.RedisService.setKey(redisKey, redisValue, 60 * 60);
+        await this.RedisService.publish("wallet_created", payload.userId);
     }
 };
 exports.WalletController = WalletController;

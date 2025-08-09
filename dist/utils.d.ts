@@ -1,6 +1,5 @@
-export declare function encryptData(data: string, encryptionKey: string): {
+export declare function encryptData(data: string, encryptionKeyHex: string): {
     iv: string;
-    authTag: string;
     encryptedData: string;
 };
-export declare function decryptData(encryptedHex: string, encryptionKey: string, ivHex: string, authTagHex: string): string;
+export declare function decryptData(encryptedHex: string, encryptionKeyHex: string, ivHex: string): string;

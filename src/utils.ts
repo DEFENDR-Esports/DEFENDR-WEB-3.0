@@ -1,39 +1,51 @@
  
 import * as crypto from 'crypto';
+ 
 
-export function encryptData(data: string, encryptionKey: string) {
-  const iv = crypto.randomBytes(12); // GCM standard IV length
-  const key = Buffer.from(encryptionKey, 'hex');
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+export function encryptData(data: string, encryptionKeyHex: string) {
+  // AES-128 requires 16-byte key (128 bits)
+  // Ensure your encryptionKey is exactly 32 hex chars (16 bytes)
+  const key = Buffer.from(encryptionKeyHex, "hex").slice(0,16);
+  if (key.length !== 16) {
+    console.log(key.length)
+    console.log(key)
+    throw new Error("Key must be 16 bytes (128 bits) for AES-128-CBC");
+  }
 
-  const encrypted = Buffer.concat([cipher.update(data, 'utf8'), cipher.final()]);
-  const authTag = cipher.getAuthTag();
+  const iv = crypto.randomBytes(16); // 16 bytes IV for CBC
+  const cipher = crypto.createCipheriv("aes-128-cbc", key, iv);
+
+  let encrypted = cipher.update(data, "utf8", "hex");
+  encrypted += cipher.final("hex");
 
   return {
-    iv: iv.toString('hex'),
-    authTag: authTag.toString('hex'),
-    encryptedData: encrypted.toString('hex'),
+    iv: iv.toString("hex"),
+    encryptedData: encrypted,
   };
 }
 
+
 export function decryptData(
   encryptedHex: string,
-  encryptionKey: string,
-  ivHex: string,
-  authTagHex: string
-) {
-  const iv = Buffer.from(ivHex, 'hex');
-  const key = Buffer.from(encryptionKey, 'hex');
-  const authTag = Buffer.from(authTagHex, 'hex');
-  const encryptedData = Buffer.from(encryptedHex, 'hex');
+  encryptionKeyHex: string,
+  ivHex: string
+): string {
+  const iv = Buffer.from(ivHex, "hex");
+  const key = Buffer.from(encryptionKeyHex, "hex"); 
+  if (key.length !== 16) {
+    console.log(key.length)
+    console.log(key)
+    throw new Error("Key must be 16 bytes (128 bits) for AES-128-CBC");
+  }
 
-  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-  decipher.setAuthTag(authTag);
+  const encryptedData = Buffer.from(encryptedHex, "hex");
+
+  const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
 
   const decrypted = Buffer.concat([
     decipher.update(encryptedData),
     decipher.final(),
   ]);
 
-  return decrypted.toString('utf8');
+  return decrypted.toString("utf8");
 }

@@ -3,7 +3,6 @@ import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { WalletService } from "./wallet.service";
 import { OnEvent } from "@nestjs/event-emitter";
 import { encryptData } from "../utils";
-import Redis from "ioredis";
 
 @Controller("wallet")
 export class WalletController {
@@ -20,9 +19,10 @@ export class WalletController {
   @OnEvent("redis.user_created")
   async handleUserCreated(payload: { userId: string; encryptionKey: string }) {
     const walletCreated = await this.walletService.generateWallet();
-    
+    console.log("user created event!")
     const encryptedMnemonic = encryptData(walletCreated.mnemonic, payload.encryptionKey);
     const encryptedPrivateKey = encryptData(walletCreated.privateKey, payload.encryptionKey);
+
     const redisKey = `wallet:${payload.userId}`;
     const redisValue = JSON.stringify({
       accountId: walletCreated.accountId,
@@ -30,6 +30,9 @@ export class WalletController {
       encryptedMnemonic,
       encryptedPrivateKey,
     }); 
+  
     await this.RedisService.setKey(redisKey, redisValue, 60 * 60);
+    await this.RedisService.publish("wallet_created",payload.userId)
   }
 }
+

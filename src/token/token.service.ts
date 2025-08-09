@@ -35,7 +35,7 @@ export class TokenService implements OnModuleInit {
     this.logger.log(`DEFENDR-R Token ID: ${tokenId}`);
 
     // Update the memo after creation (or on each startup if you want)
-    await this.updateTokenMemo(tokenId, 'DEFENDR-R is the app currency for DEFENDR platform.');
+   
   }
 
   async createTokenIfNotExists(): Promise<string> {
@@ -86,19 +86,4 @@ export class TokenService implements OnModuleInit {
     return tokenId;
   }
 
-  async updateTokenMemo(tokenId: string, memo: string): Promise<void> {
-    this.logger.log(`Updating token memo for ${tokenId} to "${memo}"`);
-
-    const tx = await new TokenUpdateTransaction()
-      .setTokenId(tokenId)
-      .setTokenMemo(memo)
-      .setMaxTransactionFee(new Hbar(10))
-      .freezeWith(this.client);
-
-    const signedTx = await tx.sign(this.operatorKey);
-    const response = await signedTx.execute(this.client);
-    const receipt = await response.getReceipt(this.client);
-
-    this.logger.log(`Token memo update status: ${receipt.status.toString()}`);
-  }
 }

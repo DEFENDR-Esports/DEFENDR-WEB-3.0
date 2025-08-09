@@ -14,7 +14,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   constructor(private eventEmitter: EventEmitter2) {}
 
   onModuleInit() {
-    return ;
+    
     // Create subscriber Redis client
     this.subscriber = new Redis({
       host: '192.168.1.7',

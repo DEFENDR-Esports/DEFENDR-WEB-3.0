@@ -30,7 +30,6 @@ let TokenService = TokenService_1 = class TokenService {
     async onModuleInit() {
         const tokenId = await this.createTokenIfNotExists();
         this.logger.log(`DEFENDR-R Token ID: ${tokenId}`);
-        await this.updateTokenMemo(tokenId, 'DEFENDR-R is the app currency for DEFENDR platform.');
     }
     async createTokenIfNotExists() {
         if (fs.existsSync(this.tokenIdFile)) {
@@ -66,18 +65,6 @@ let TokenService = TokenService_1 = class TokenService {
         fs.writeFileSync(this.tokenIdFile, tokenId);
         this.logger.log(`Created new token with ID: ${tokenId}`);
         return tokenId;
-    }
-    async updateTokenMemo(tokenId, memo) {
-        this.logger.log(`Updating token memo for ${tokenId} to "${memo}"`);
-        const tx = await new sdk_1.TokenUpdateTransaction()
-            .setTokenId(tokenId)
-            .setTokenMemo(memo)
-            .setMaxTransactionFee(new sdk_1.Hbar(10))
-            .freezeWith(this.client);
-        const signedTx = await tx.sign(this.operatorKey);
-        const response = await signedTx.execute(this.client);
-        const receipt = await response.getReceipt(this.client);
-        this.logger.log(`Token memo update status: ${receipt.status.toString()}`);
     }
 };
 exports.TokenService = TokenService;

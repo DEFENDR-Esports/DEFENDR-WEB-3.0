@@ -9,5 +9,4 @@ export declare class TokenService implements OnModuleInit {
     constructor(config: ConfigService);
     onModuleInit(): Promise<void>;
     createTokenIfNotExists(): Promise<string>;
-    updateTokenMemo(tokenId: string, memo: string): Promise<void>;
 }
