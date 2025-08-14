@@ -19,7 +19,7 @@ let TokenService = TokenService_1 = class TokenService {
     constructor(config) {
         this.config = config;
         this.logger = new common_1.Logger(TokenService_1.name);
-        this.tokenIdFile = 'defendr-r.tokenid';
+        this.tokenIdFile = 'defendr-b.tokenid';
         const network = this.config.get('HEDERA_NETWORK') || 'testnet';
         const operatorId = sdk_1.AccountId.fromString(this.config.get('OPERATOR_ID'));
         const operatorKeyString = this.config.get('OPERATOR_KEY');
@@ -29,42 +29,48 @@ let TokenService = TokenService_1 = class TokenService {
     }
     async onModuleInit() {
         const tokenId = await this.createTokenIfNotExists();
-        this.logger.log(`DEFENDR-R Token ID: ${tokenId}`);
+        this.logger.log(`DEFENDR-B Token ID: ${tokenId}`);
     }
     async createTokenIfNotExists() {
         if (fs.existsSync(this.tokenIdFile)) {
             const existingTokenId = fs.readFileSync(this.tokenIdFile, 'utf8');
-            this.logger.log(`Token already created with ID: ${existingTokenId}`);
+            this.logger.log(`Token already exists with ID: ${existingTokenId}`);
             return existingTokenId.trim();
         }
         const treasuryIdString = this.config.get('TREASURY_ACCOUNT_ID');
-        if (!treasuryIdString) {
-            throw new Error('TREASURY_ACCOUNT_ID is not defined in config');
-        }
+        if (!treasuryIdString)
+            throw new Error('TREASURY_ACCOUNT_ID is not defined');
         const treasuryId = sdk_1.AccountId.fromString(treasuryIdString);
         const supplyKeyString = this.config.get('SUPPLY_PRIVATE_KEY');
-        if (!supplyKeyString) {
-            throw new Error('SUPPLY_PRIVATE_KEY is not defined in config');
-        }
+        if (!supplyKeyString)
+            throw new Error('SUPPLY_PRIVATE_KEY is not defined');
         const supplyKey = sdk_1.PrivateKey.fromString(supplyKeyString);
+        const kycKeyString = this.config.get('KYC_PRIVATE_KEY');
+        const kycKey = kycKeyString ? sdk_1.PrivateKey.fromString(kycKeyString) : undefined;
+        const freezeKeyString = this.config.get('FREEZE_PRIVATE_KEY');
+        const freezeKey = freezeKeyString ? sdk_1.PrivateKey.fromString(freezeKeyString) : undefined;
+        const tokenType = this.config.get('TOKEN_TYPE') === 'NFT' ? sdk_1.TokenType.NonFungibleUnique : sdk_1.TokenType.FungibleCommon;
+        const initialSupply = tokenType === sdk_1.TokenType.FungibleCommon ? 0 : 0;
         const tx = await new sdk_1.TokenCreateTransaction()
-            .setTokenName('DEFENDR-R')
-            .setTokenSymbol('DFR')
-            .setTokenType(sdk_1.TokenType.FungibleCommon)
-            .setDecimals(0)
-            .setInitialSupply(0)
+            .setTokenName('DEFENDR-B')
+            .setTokenSymbol('DFB')
+            .setTokenType(tokenType)
+            .setDecimals(tokenType === sdk_1.TokenType.FungibleCommon ? 0 : undefined)
+            .setInitialSupply(initialSupply)
             .setTreasuryAccountId(treasuryId)
             .setSupplyType(sdk_1.TokenSupplyType.Infinite)
             .setSupplyKey(supplyKey)
+            .setKycKey(kycKey)
+            .setFreezeKey(freezeKey)
             .setMaxTransactionFee(new sdk_1.Hbar(10))
             .freezeWith(this.client);
         const signedTx = await tx.sign(this.operatorKey);
         const response = await signedTx.execute(this.client);
         const receipt = await response.getReceipt(this.client);
-        const tokenId = receipt.tokenId.toString();
-        fs.writeFileSync(this.tokenIdFile, tokenId);
-        this.logger.log(`Created new token with ID: ${tokenId}`);
-        return tokenId;
+        const tokenId = receipt.tokenId;
+        fs.writeFileSync(this.tokenIdFile, tokenId.toString());
+        this.logger.log(`Created DEFENDR-B token with ID: ${tokenId}`);
+        return tokenId.toString();
     }
 };
 exports.TokenService = TokenService;

@@ -4,11 +4,11 @@ import {
   Client,
   PrivateKey,
   TokenCreateTransaction,
-  TokenUpdateTransaction,
   TokenType,
   TokenSupplyType,
   AccountId,
   Hbar,
+  TokenId,
 } from '@hashgraph/sdk';
 import * as fs from 'fs';
 
@@ -16,7 +16,7 @@ import * as fs from 'fs';
 export class TokenService implements OnModuleInit {
   private readonly logger = new Logger(TokenService.name);
   private client: Client;
-  private tokenIdFile = 'defendr-r.tokenid'; // store token id locally or use DB
+  private tokenIdFile = 'defendr-b.tokenid';
 
   private operatorKey: PrivateKey;
 
@@ -32,58 +32,55 @@ export class TokenService implements OnModuleInit {
 
   async onModuleInit() {
     const tokenId = await this.createTokenIfNotExists();
-    this.logger.log(`DEFENDR-R Token ID: ${tokenId}`);
-
-    // Update the memo after creation (or on each startup if you want)
-   
+    this.logger.log(`DEFENDR-B Token ID: ${tokenId}`);
   }
 
   async createTokenIfNotExists(): Promise<string> {
     if (fs.existsSync(this.tokenIdFile)) {
       const existingTokenId = fs.readFileSync(this.tokenIdFile, 'utf8');
-      this.logger.log(`Token already created with ID: ${existingTokenId}`);
+      this.logger.log(`Token already exists with ID: ${existingTokenId}`);
       return existingTokenId.trim();
     }
 
-    // Prepare treasury and supply keys
     const treasuryIdString = this.config.get<string>('TREASURY_ACCOUNT_ID');
-    if (!treasuryIdString) {
-      throw new Error('TREASURY_ACCOUNT_ID is not defined in config');
-    }
+    if (!treasuryIdString) throw new Error('TREASURY_ACCOUNT_ID is not defined');
     const treasuryId = AccountId.fromString(treasuryIdString);
 
     const supplyKeyString = this.config.get<string>('SUPPLY_PRIVATE_KEY');
-    if (!supplyKeyString) {
-      throw new Error('SUPPLY_PRIVATE_KEY is not defined in config');
-    }
+    if (!supplyKeyString) throw new Error('SUPPLY_PRIVATE_KEY is not defined');
     const supplyKey = PrivateKey.fromString(supplyKeyString);
 
-    // Create the token
+    const kycKeyString = this.config.get<string>('KYC_PRIVATE_KEY');
+    const kycKey = kycKeyString ? PrivateKey.fromString(kycKeyString) : undefined;
+
+    const freezeKeyString = this.config.get<string>('FREEZE_PRIVATE_KEY');
+    const freezeKey = freezeKeyString ? PrivateKey.fromString(freezeKeyString) : undefined;
+
+    // Choose TokenType: Fungible or NFT
+    const tokenType = this.config.get<string>('TOKEN_TYPE') === 'NFT' ? TokenType.NonFungibleUnique : TokenType.FungibleCommon;
+    const initialSupply = tokenType === TokenType.FungibleCommon ? 0 : 0;
+
     const tx = await new TokenCreateTransaction()
-      .setTokenName('DEFENDR-R')
-      .setTokenSymbol('DFR')
-      .setTokenType(TokenType.FungibleCommon)
-      .setDecimals(0)
-      .setInitialSupply(0)
+      .setTokenName('DEFENDR-B')
+      .setTokenSymbol('DFB')
+      .setTokenType(tokenType)
+      .setDecimals(tokenType === TokenType.FungibleCommon ? 0 : undefined)
+      .setInitialSupply(initialSupply)
       .setTreasuryAccountId(treasuryId)
       .setSupplyType(TokenSupplyType.Infinite)
       .setSupplyKey(supplyKey)
-      .setMaxTransactionFee(new Hbar(10)) // Set a reasonable max fee
+      .setKycKey(kycKey)
+      .setFreezeKey(freezeKey)
+      .setMaxTransactionFee(new Hbar(10))
       .freezeWith(this.client);
 
-    // Sign transaction with operator key
     const signedTx = await tx.sign(this.operatorKey);
-
-    // Execute transaction
     const response = await signedTx.execute(this.client);
     const receipt = await response.getReceipt(this.client);
-    const tokenId = receipt.tokenId.toString();
+    const tokenId: TokenId = receipt.tokenId;
 
-    // Save token id for reuse (to avoid multiple creations)
-    fs.writeFileSync(this.tokenIdFile, tokenId);
-
-    this.logger.log(`Created new token with ID: ${tokenId}`);
-    return tokenId;
+    fs.writeFileSync(this.tokenIdFile, tokenId.toString());
+    this.logger.log(`Created DEFENDR-B token with ID: ${tokenId}`);
+    return tokenId.toString();
   }
-
 }
