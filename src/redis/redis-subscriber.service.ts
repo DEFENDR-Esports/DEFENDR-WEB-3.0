@@ -17,7 +17,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     
     // Create subscriber Redis client
     this.subscriber = new Redis({
-      host: '192.168.1.7',
+      host: '192.168.1.11',
       port: 6379,
     });
 
@@ -50,7 +50,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
     // Create publisher Redis client
     this.publisher = new Redis({
-      host: '192.168.1.7',
+      host: '192.168.1.11',
       port: 6379,
     });
 

@@ -17,10 +17,11 @@ const redis_subscriber_service_1 = require("./../redis/redis-subscriber.service"
 const common_1 = require("@nestjs/common");
 const wallet_service_1 = require("./wallet.service");
 const event_emitter_1 = require("@nestjs/event-emitter");
-const utils_1 = require("../utils");
+const cryptoService_1 = require("../crypto/cryptoService");
 let WalletController = class WalletController {
-    constructor(walletService, RedisService) {
+    constructor(walletService, cryptoService, RedisService) {
         this.walletService = walletService;
+        this.cryptoService = cryptoService;
         this.RedisService = RedisService;
     }
     getBalance(accountId) {
@@ -29,8 +30,8 @@ let WalletController = class WalletController {
     async handleUserCreated(payload) {
         const walletCreated = await this.walletService.generateWallet();
         console.log("user created event!");
-        const encryptedMnemonic = (0, utils_1.encryptData)(walletCreated.mnemonic, payload.encryptionKey);
-        const encryptedPrivateKey = (0, utils_1.encryptData)(walletCreated.privateKey, payload.encryptionKey);
+        const encryptedMnemonic = this.cryptoService.encryptData(walletCreated.mnemonic, payload.encryptionKey);
+        const encryptedPrivateKey = this.cryptoService.encryptData(walletCreated.privateKey, payload.encryptionKey);
         const redisKey = `wallet:${payload.userId}`;
         const redisValue = JSON.stringify({
             accountId: walletCreated.accountId,
@@ -58,6 +59,6 @@ __decorate([
 ], WalletController.prototype, "handleUserCreated", null);
 exports.WalletController = WalletController = __decorate([
     (0, common_1.Controller)("wallet"),
-    __metadata("design:paramtypes", [wallet_service_1.WalletService, redis_subscriber_service_1.RedisService])
+    __metadata("design:paramtypes", [wallet_service_1.WalletService, cryptoService_1.CryptoService, redis_subscriber_service_1.RedisService])
 ], WalletController);
 //# sourceMappingURL=wallet.controller.js.map
