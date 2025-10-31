@@ -22,7 +22,7 @@ let RedisService = RedisService_1 = class RedisService {
     }
     onModuleInit() {
         this.subscriber = new ioredis_1.default({
-            host: '192.168.1.11',
+            host: '192.168.1.3',
             port: 6379,
         });
         this.subscriber.on('connect', () => {
@@ -50,7 +50,7 @@ let RedisService = RedisService_1 = class RedisService {
             }
         });
         this.publisher = new ioredis_1.default({
-            host: '192.168.1.11',
+            host: '192.168.1.3',
             port: 6379,
         });
         this.publisher.on('connect', () => {

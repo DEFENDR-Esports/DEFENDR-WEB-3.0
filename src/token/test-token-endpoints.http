@@ -1,0 +1,29 @@
+### Create DEFENDR-R Token
+# This will create the DEFENDR-R fungible token and associate it with the treasury account
+POST http://localhost:3000/token/create-defendr-r
+Content-Type: application/json
+
+### Mint DEFENDR-R Tokens (100,000 tokens)
+POST http://localhost:3000/token/mint-defendr-r
+Content-Type: application/json
+
+{
+  "amount": 100000
+}
+
+### Mint DEFENDR-R Tokens (1,000,000 tokens)
+POST http://localhost:3000/token/mint-defendr-r
+Content-Type: application/json
+
+{
+  "amount": 1000000
+}
+
+### Check NFT Token Info (DEFENDR-R)
+# First, get the token ID from defendr-r.tokenid file
+GET http://localhost:3000/nft/token/info/0.0.YOUR_TOKEN_ID
+
+### Check Treasury Balance
+# Replace with your TREASURY_ACCOUNT_ID from .env
+GET http://localhost:3000/nft/balance/0.0.YOUR_TREASURY_ID
+

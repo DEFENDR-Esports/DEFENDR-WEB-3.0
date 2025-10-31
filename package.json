@@ -22,6 +22,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "crypto-js": "^4.2.0",
     "ioredis": "^5.7.0",
+    "ipfs-http-client": "^60.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0"
   },

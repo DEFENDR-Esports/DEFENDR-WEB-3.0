@@ -19,6 +19,25 @@ let AppController = class AppController {
     getHello() {
         return this.appService.getHello();
     }
+    getApiInfo() {
+        return {
+            message: 'API DEFENDR v3.0',
+            endpoints: {
+                nft: {
+                    mint: 'POST /nft/mint',
+                    info: 'GET /nft/info/:nftId',
+                    health: 'GET /nft/health'
+                },
+                token: {
+                    info: 'GET /token'
+                },
+                wallet: {
+                    info: 'GET /wallet'
+                }
+            },
+            documentation: 'Voir /nft/README.md pour plus de détails'
+        };
+    }
 };
 exports.AppController = AppController;
 __decorate([
@@ -27,6 +46,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", String)
 ], AppController.prototype, "getHello", null);
+__decorate([
+    (0, common_1.Get)('api'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Object)
+], AppController.prototype, "getApiInfo", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
     __metadata("design:paramtypes", [app_service_1.AppService])

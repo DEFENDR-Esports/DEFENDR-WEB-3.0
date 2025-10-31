@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon NFT DEFENDR</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .nft-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+        .nft-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .nft-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .nft-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .nft-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .detail-value {
+            color: #333;
+            font-family: monospace;
+        }
+        .share-buttons {
+            margin-top: 20px;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            margin: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        .ipfs-link {
+            background: #28a745;
+        }
+        .hashscan-link {
+            background: #17a2b8;
+        }
+        .copy-btn {
+            background: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="nft-card">
+        <img id="nftImage" class="nft-image" alt="Mon NFT" />
+        <h1 class="nft-title" id="nftTitle">Mon NFT DEFENDR</h1>
+        <p class="nft-description" id="nftDescription">Un NFT unique créé avec DEFENDR</p>
+        
+        <div class="nft-details">
+            <div class="detail-item">
+                <span class="detail-label">NFT ID:</span>
+                <span class="detail-value" id="nftId">0.0.6920218/4</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Token ID:</span>
+                <span class="detail-value" id="tokenId">0.0.6920218</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Numéro de série:</span>
+                <span class="detail-value" id="serialNumber">4</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Transaction:</span>
+                <span class="detail-value" id="transactionId">0.0.6498351@1759109984.030511890</span>
+            </div>
+        </div>
+
+        <div class="share-buttons">
+            <a href="#" id="ipfsLink" class="btn ipfs-link" target="_blank">Voir sur IPFS</a>
+            <a href="#" id="hashscanLink" class="btn hashscan-link" target="_blank">Voir sur HashScan</a>
+            <button onclick="copyToClipboard()" class="btn copy-btn">Copier les détails</button>
+        </div>
+    </div>
+
+    <script>
+        // Configuration du NFT
+        const nftData = {
+            nftId: "0.0.6920218/4",
+            tokenId: "0.0.6920218",
+            serialNumber: 4,
+            transactionId: "0.0.6498351@1759109984.030511890",
+            imageCid: "QmJGmOKhe0DhRkvMJqGlBxLEg2Ur64gBSfg3ASYwUJMstp",
+            metadataCid: "Qmq52B1xSptFUnnp6J6LjSMioqVoD3OBHuleixAe4Ms8R3"
+        };
+
+        // Mise à jour des éléments
+        document.getElementById('nftId').textContent = nftData.nftId;
+        document.getElementById('tokenId').textContent = nftData.tokenId;
+        document.getElementById('serialNumber').textContent = nftData.serialNumber;
+        document.getElementById('transactionId').textContent = nftData.transactionId;
+
+        // Configuration des liens
+        const imageUrl = `https://ipfs.io/ipfs/${nftData.imageCid}`;
+        const metadataUrl = `https://ipfs.io/ipfs/${nftData.metadataCid}`;
+        const hashscanUrl = `https://hashscan.io/testnet/token/${nftData.tokenId}`;
+
+        document.getElementById('nftImage').src = imageUrl;
+        document.getElementById('ipfsLink').href = imageUrl;
+        document.getElementById('hashscanLink').href = hashscanUrl;
+
+        // Fonction de copie
+        function copyToClipboard() {
+            const text = `🎨 Mon NFT DEFENDR
+NFT ID: ${nftData.nftId}
+Image: ${imageUrl}
+HashScan: ${hashscanUrl}
+Métadonnées: ${metadataUrl}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Détails copiés dans le presse-papiers !');
+            });
+        }
+
+        // Chargement des métadonnées
+        fetch(metadataUrl)
+            .then(response => response.json())
+            .then(metadata => {
+                if (metadata.name) {
+                    document.getElementById('nftTitle').textContent = metadata.name;
+                }
+                if (metadata.description) {
+                    document.getElementById('nftDescription').textContent = metadata.description;
+                }
+            })
+            .catch(error => {
+                console.log('Impossible de charger les métadonnées:', error);
+            });
+    </script>
+</body>
+</html>

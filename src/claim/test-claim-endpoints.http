@@ -1,0 +1,121 @@
+### Health Check
+GET http://localhost:3000/claim/health
+
+### Claim NFT - Easy Mission
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.123456",
+    "name": "Alice Cooper",
+    "email": "alice@defendr.com"
+  },
+  "mission": {
+    "id": "easy-001",
+    "name": "Introduction",
+    "description": "Complete the introduction tutorial",
+    "difficulty": "easy",
+    "reward": 50,
+    "imageUrl": "https://example.com/images/mission-intro.png"
+  },
+  "tokenAmount": 50
+}
+
+### Claim NFT - Medium Mission
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.123456",
+    "name": "Bob Martin"
+  },
+  "mission": {
+    "id": "medium-001",
+    "name": "Intermediate Challenge",
+    "description": "Complete 10 levels",
+    "difficulty": "medium",
+    "reward": 150,
+    "imageUrl": "https://example.com/images/mission-intermediate.png"
+  },
+  "tokenAmount": 150
+}
+
+### Claim NFT - Hard Mission with Big Reward
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.789012",
+    "name": "Charlie Brown",
+    "email": "charlie@defendr.com"
+  },
+  "mission": {
+    "id": "hard-001",
+    "name": "Final Boss",
+    "description": "Defeat the final boss of the game",
+    "difficulty": "hard",
+    "reward": 500,
+    "imageUrl": "https://example.com/images/mission-boss.png"
+  },
+  "tokenAmount": 500
+}
+
+### Claim NFT - Daily Mission
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.123456",
+    "name": "Daily Player"
+  },
+  "mission": {
+    "id": "daily-2025-10-01",
+    "name": "Daily Challenge",
+    "description": "Daily mission - October 1st",
+    "difficulty": "medium",
+    "reward": 100,
+    "imageUrl": "https://example.com/images/mission-daily.png"
+  },
+  "tokenAmount": 100
+}
+
+### Claim NFT - Special Event Mission
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.456789",
+    "name": "Event Participant",
+    "email": "event@defendr.com"
+  },
+  "mission": {
+    "id": "event-halloween-2025",
+    "name": "Halloween Special",
+    "description": "Participate in the Halloween 2025 event",
+    "difficulty": "medium",
+    "reward": 300,
+    "imageUrl": "https://example.com/images/mission-halloween.png"
+  },
+  "tokenAmount": 300
+}
+
+### Claim NFT - Minimal (Required Fields Only)
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.111111"
+  },
+  "mission": {
+    "id": "min-001",
+    "name": "Minimal Mission"
+  },
+  "tokenAmount": 25
+}
+

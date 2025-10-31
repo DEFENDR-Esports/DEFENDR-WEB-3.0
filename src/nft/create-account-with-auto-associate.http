@@ -1,0 +1,45 @@
+### Create Account with Auto-Association Enabled
+# This creates an account that can automatically receive ANY token (like Ethereum)
+POST http://localhost:3000/nft/account/create
+Content-Type: application/json
+
+{
+  "initialBalance": 10,
+  "maxTokenAssociations": 100
+}
+
+### Response will give you:
+# {
+#   "accountId": "0.0.123456",
+#   "privateKey": "302e020100...",
+#   "publicKey": "302a300506...",
+#   "status": "SUCCESS"
+# }
+
+### Then enable auto-association (ONE TIME per account)
+POST http://localhost:3000/nft/account/auto-associate
+Content-Type: application/json
+
+{
+  "accountId": "0.0.123456",
+  "privateKey": "302e020100...",
+  "maxAssociations": 100
+}
+
+### Now you can directly claim NFTs without manual token association!
+POST http://localhost:3000/claim/nft
+Content-Type: application/json
+
+{
+  "user": {
+    "accountId": "0.0.123456",
+    "name": "John Doe"
+  },
+  "mission": {
+    "id": "mission-001",
+    "name": "First Mission",
+    "imageUrl": "https://example.com/mission.png"
+  },
+  "tokenAmount": 100
+}
+

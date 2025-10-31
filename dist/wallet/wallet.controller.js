@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var WalletController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WalletController = void 0;
 const redis_subscriber_service_1 = require("./../redis/redis-subscriber.service");
@@ -18,29 +19,47 @@ const common_1 = require("@nestjs/common");
 const wallet_service_1 = require("./wallet.service");
 const event_emitter_1 = require("@nestjs/event-emitter");
 const cryptoService_1 = require("../crypto/cryptoService");
-let WalletController = class WalletController {
-    constructor(walletService, cryptoService, RedisService) {
+const token_service_1 = require("../token/token.service");
+let WalletController = WalletController_1 = class WalletController {
+    constructor(walletService, cryptoService, RedisService, tokenService) {
         this.walletService = walletService;
         this.cryptoService = cryptoService;
         this.RedisService = RedisService;
+        this.tokenService = tokenService;
+        this.logger = new common_1.Logger(WalletController_1.name);
     }
     getBalance(accountId) {
         return this.walletService.getBalance(accountId);
     }
     async handleUserCreated(payload) {
-        const walletCreated = await this.walletService.generateWallet();
-        console.log("user created event!");
-        const encryptedMnemonic = this.cryptoService.encryptData(walletCreated.mnemonic, payload.encryptionKey);
-        const encryptedPrivateKey = this.cryptoService.encryptData(walletCreated.privateKey, payload.encryptionKey);
-        const redisKey = `wallet:${payload.userId}`;
-        const redisValue = JSON.stringify({
-            accountId: walletCreated.accountId,
-            publicKey: walletCreated.publicKey,
-            encryptedMnemonic,
-            encryptedPrivateKey,
-        });
-        await this.RedisService.setKey(redisKey, redisValue, 60 * 60);
-        await this.RedisService.publish("wallet_created", payload.userId);
+        try {
+            this.logger.log(`🎯 User created event received for userId: ${payload.userId}`);
+            const walletCreated = await this.walletService.generateWallet();
+            this.logger.log(`✅ Wallet created: ${walletCreated.accountId}`);
+            try {
+                const tokenResult = await this.tokenService.sendDefendrRTokensToNewAccount(walletCreated.accountId, walletCreated.privateKey, 30);
+                this.logger.log(`🎁 ${tokenResult.message}`);
+            }
+            catch (tokenError) {
+                this.logger.error(`⚠️ Failed to send welcome tokens: ${tokenError.message}`);
+            }
+            const encryptedMnemonic = this.cryptoService.encryptData(walletCreated.mnemonic, payload.encryptionKey);
+            const encryptedPrivateKey = this.cryptoService.encryptData(walletCreated.privateKey, payload.encryptionKey);
+            const redisKey = `wallet:${payload.userId}`;
+            const redisValue = JSON.stringify({
+                accountId: walletCreated.accountId,
+                publicKey: walletCreated.publicKey,
+                encryptedMnemonic,
+                encryptedPrivateKey,
+            });
+            await this.RedisService.setKey(redisKey, redisValue, 60 * 60);
+            await this.RedisService.publish("wallet_created", payload.userId);
+            this.logger.log(`✅ Wallet creation completed for userId: ${payload.userId}`);
+        }
+        catch (error) {
+            this.logger.error(`❌ Error in handleUserCreated: ${error.message}`);
+            throw error;
+        }
     }
 };
 exports.WalletController = WalletController;
@@ -57,8 +76,11 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], WalletController.prototype, "handleUserCreated", null);
-exports.WalletController = WalletController = __decorate([
+exports.WalletController = WalletController = WalletController_1 = __decorate([
     (0, common_1.Controller)("wallet"),
-    __metadata("design:paramtypes", [wallet_service_1.WalletService, cryptoService_1.CryptoService, redis_subscriber_service_1.RedisService])
+    __metadata("design:paramtypes", [wallet_service_1.WalletService,
+        cryptoService_1.CryptoService,
+        redis_subscriber_service_1.RedisService,
+        token_service_1.TokenService])
 ], WalletController);
 //# sourceMappingURL=wallet.controller.js.map

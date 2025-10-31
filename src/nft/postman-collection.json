@@ -1,0 +1,124 @@
+{
+  "info": {
+    "name": "DEFENDR NFT API",
+    "description": "Collection de tests pour l'API NFT DEFENDR avec IPFS",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/nft/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["nft", "health"]
+        }
+      }
+    },
+    {
+      "name": "IPFS Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/nft/ipfs/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["nft", "ipfs", "health"]
+        }
+      }
+    },
+    {
+      "name": "Upload to IPFS",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "image",
+              "type": "file",
+              "src": "test-image.png"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/nft/upload/ipfs",
+          "host": ["{{baseUrl}}"],
+          "path": ["nft", "upload", "ipfs"]
+        }
+      }
+    },
+    {
+      "name": "Mint NFT with Image",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "image",
+              "type": "file",
+              "src": "test-image.png"
+            },
+            {
+              "key": "name",
+              "value": "Mon Super NFT",
+              "type": "text"
+            },
+            {
+              "key": "description",
+              "value": "Un NFT créé avec l'API DEFENDR",
+              "type": "text"
+            },
+            {
+              "key": "attributes",
+              "value": "{\"rarity\":\"epic\",\"level\":1,\"artist\":\"DEFENDR\"}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/nft/mint/with-image",
+          "host": ["{{baseUrl}}"],
+          "path": ["nft", "mint", "with-image"]
+        }
+      }
+    },
+    {
+      "name": "Mint Simple NFT",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"NFT Simple\",\n  \"description\": \"Un NFT simple sans image\",\n  \"attributes\": {\n    \"rarity\": \"common\",\n    \"type\": \"simple\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/nft/mint",
+          "host": ["{{baseUrl}}"],
+          "path": ["nft", "mint"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ]
+}
+
+
+
+
+

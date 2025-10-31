@@ -1,0 +1,150 @@
+### Test des endpoints NFT DEFENDR
+### Utilisez ces requêtes dans VS Code avec l'extension REST Client
+
+@baseUrl = http://localhost:3000
+
+### 1. Health Check
+GET {{baseUrl}}/nft/health
+
+### 2. Créer un compte Alice
+POST {{baseUrl}}/nft/account/create
+Content-Type: application/json
+
+{
+  "initialBalance": 10,
+  "maxTokenAssociations": 10
+}
+
+### 3. Créer un compte Bob
+POST {{baseUrl}}/nft/account/create
+Content-Type: application/json
+
+{
+  "initialBalance": 10,
+  "maxTokenAssociations": 10
+}
+
+### 4. Créer un token NFT avec frais personnalisés
+POST {{baseUrl}}/nft/token/create
+Content-Type: application/json
+
+{
+  "tokenName": "Fall Collection",
+  "tokenSymbol": "LEAF",
+  "maxSupply": 5,
+  "customFeeAmount": 1000000
+}
+
+### 5. Minter des NFTs en batch
+POST {{baseUrl}}/nft/mint/batch
+Content-Type: application/json
+
+{
+  "tokenId": "0.0.123456",
+  "cids": [
+    "QmHash1...",
+    "QmHash2...",
+    "QmHash3...",
+    "QmHash4...",
+    "QmHash5..."
+  ]
+}
+
+### 6. Mint NFT simple
+POST {{baseUrl}}/nft/mint
+Content-Type: application/json
+
+{
+  "name": "Mon Super NFT",
+  "description": "Un NFT de test",
+  "image": "https://example.com/image.png",
+  "attributes": {
+    "rarity": "legendary",
+    "level": 1
+  }
+}
+
+### 7. Vérifier les informations d'un token
+GET {{baseUrl}}/nft/token/info/0.0.123456
+
+### 8. Vérifier le solde d'un compte
+GET {{baseUrl}}/nft/balance/0.0.123456?tokenId=0.0.789012
+
+### 9. Activer l'auto-association pour Alice
+POST {{baseUrl}}/nft/account/auto-associate
+Content-Type: application/json
+
+{
+  "accountId": "0.0.123456",
+  "privateKey": "302e020100...",
+  "maxAssociations": 10
+}
+
+### 10. Associer manuellement un token
+POST {{baseUrl}}/nft/account/associate
+Content-Type: application/json
+
+{
+  "accountId": "0.0.123456",
+  "tokenId": "0.0.789012",
+  "privateKey": "302e020100..."
+}
+
+### 11. Transférer un NFT
+POST {{baseUrl}}/nft/transfer
+Content-Type: application/json
+
+{
+  "tokenId": "0.0.123456",
+  "serialNumber": 1,
+  "fromAccountId": "0.0.111111",
+  "toAccountId": "0.0.222222",
+  "fromPrivateKey": "302e020100...",
+  "toPrivateKey": "302e020100...",
+  "price": 1
+}
+
+### 12. Brûler un NFT
+POST {{baseUrl}}/nft/burn
+Content-Type: application/json
+
+{
+  "tokenId": "0.0.123456",
+  "serialNumber": 1
+}
+
+### 13. Récupérer les infos d'un NFT
+GET {{baseUrl}}/nft/info/0.0.123456/1
+
+### 14. Vérifier la santé d'IPFS
+GET {{baseUrl}}/nft/ipfs/health
+
+### 15. Upload simple vers IPFS
+POST {{baseUrl}}/nft/upload/ipfs
+Content-Type: multipart/form-data
+
+image: [fichier à uploader]
+
+### 16. Upload d'image et mint NFT avec IPFS
+POST {{baseUrl}}/nft/mint/with-image
+Content-Type: multipart/form-data
+
+image: [fichier image]
+name: Mon NFT avec Image IPFS
+description: Un NFT créé avec upload IPFS
+attributes: {"rarity": "epic", "artist": "Moi", "ipfs_enabled": true}
+
+### 17. Récupérer les métadonnées d'un NFT
+GET {{baseUrl}}/nft/metadata/0.0.123456/1
+
+### 18. Récupérer les métadonnées IPFS
+GET {{baseUrl}}/nft/ipfs/metadata/QmHashMetadata...
+
+### 19. Test d'upload d'image (utilisez Postman ou curl)
+# POST {{baseUrl}}/nft/mint/with-image
+# Content-Type: multipart/form-data
+# 
+# image: [fichier image]
+# name: Mon NFT avec Image
+# description: Un NFT créé avec une image uploadée
+# attributes: {"rarity": "epic", "artist": "Moi"}

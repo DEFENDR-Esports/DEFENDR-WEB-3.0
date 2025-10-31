@@ -13,13 +13,22 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const wallet_module_1 = require("./wallet/wallet.module");
 const token_module_1 = require("./token/token.module");
+const nft_module_1 = require("./nft/nft.module");
+const claim_module_1 = require("./claim/claim.module");
 const event_emitter_1 = require("@nestjs/event-emitter");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [config_module_1.ConfigModule, wallet_module_1.WalletModule, token_module_1.TokenModule, event_emitter_1.EventEmitterModule.forRoot()],
+        imports: [
+            config_module_1.ConfigModule,
+            wallet_module_1.WalletModule,
+            token_module_1.TokenModule,
+            nft_module_1.NftModule,
+            claim_module_1.ClaimModule,
+            event_emitter_1.EventEmitterModule.forRoot(),
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

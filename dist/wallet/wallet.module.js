@@ -12,11 +12,13 @@ const wallet_service_1 = require("./wallet.service");
 const wallet_controller_1 = require("./wallet.controller");
 const redis_subscriber_service_1 = require("../redis/redis-subscriber.service");
 const cryptoService_1 = require("../crypto/cryptoService");
+const token_module_1 = require("../token/token.module");
 let WalletModule = class WalletModule {
 };
 exports.WalletModule = WalletModule;
 exports.WalletModule = WalletModule = __decorate([
     (0, common_1.Module)({
+        imports: [token_module_1.TokenModule],
         providers: [wallet_service_1.WalletService, redis_subscriber_service_1.RedisService, cryptoService_1.CryptoService],
         controllers: [wallet_controller_1.WalletController]
     })
